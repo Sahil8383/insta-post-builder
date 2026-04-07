@@ -1,32 +1,17 @@
 "use client";
 
-import {
-  memo,
-  useEffect,
-  useId,
-  useMemo,
-  useRef,
-  useState,
-} from "react";
+import { memo, useEffect, useId, useMemo, useRef, useState } from "react";
 
 const DEFAULT_DESIGN = { w: 1080, h: 1080 };
 
 export type OptimizedFeedIframeProps = {
-  /** Full HTML document string (e.g. engagement_package.feed_canvas_html). */
   html: string | null;
-  /** Intrinsic canvas width from the generator (default 1080). */
   designWidth?: number;
   designHeight?: number;
-  /** Max edge length for the on-screen preview; scales down with transform. */
   maxDisplaySize?: number;
   className?: string;
 };
 
-/**
- * Instagram-oriented preview: defers iframe work until the node is visible,
- * uses a Blob URL (avoids huge `srcdoc` attributes), strict sandbox, and
- * revokes object URLs on teardown.
- */
 function OptimizedFeedIframeInner({
   html,
   designWidth = DEFAULT_DESIGN.w,
@@ -79,9 +64,6 @@ function OptimizedFeedIframeInner({
       }}
       aria-labelledby={titleId}
     >
-      <span id={titleId} className="sr-only">
-        Generated feed canvas preview
-      </span>
       {!html ? (
         <div className="flex h-full w-full items-center justify-center p-4 text-center text-xs text-zinc-500">
           No canvas HTML yet. Run a generation that includes feed canvas.
@@ -120,10 +102,7 @@ function OptimizedFeedIframeInner({
   );
 }
 
-function propsEqual(
-  a: OptimizedFeedIframeProps,
-  b: OptimizedFeedIframeProps,
-) {
+function propsEqual(a: OptimizedFeedIframeProps, b: OptimizedFeedIframeProps) {
   return (
     a.html === b.html &&
     a.designWidth === b.designWidth &&

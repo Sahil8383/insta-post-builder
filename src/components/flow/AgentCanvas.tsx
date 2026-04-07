@@ -2,8 +2,6 @@
 
 import {
   Background,
-  Controls,
-  MiniMap,
   ReactFlow,
   useEdgesState,
   useNodesState,
@@ -29,7 +27,6 @@ const defaultNode: FeedPreviewNodeType = {
   position: { x: 40, y: 40 },
   data: {
     html: null,
-    label: "Instagram feed preview",
   },
 };
 
@@ -57,7 +54,7 @@ export function AgentCanvas({ feedCanvasHtml }: AgentCanvasProps) {
   }, [feedCanvasHtml, setNodes]);
 
   return (
-    <div className="h-full w-full min-h-[480px] rounded-lg border border-zinc-200 bg-zinc-50 dark:border-zinc-800 dark:bg-zinc-950">
+    <div className="h-full w-full">
       <ReactFlow
         nodes={nodes}
         edges={edges}
@@ -68,15 +65,9 @@ export function AgentCanvas({ feedCanvasHtml }: AgentCanvasProps) {
         fitViewOptions={{ padding: 0.2 }}
         minZoom={0.25}
         maxZoom={1.5}
-        className="rounded-lg"
+        className="h-full w-full"
       >
         <Background gap={16} size={1} />
-        <Controls showInteractive={false} />
-        <MiniMap
-          zoomable
-          pannable
-          className="!bg-zinc-200/90 dark:!bg-zinc-800/90"
-        />
       </ReactFlow>
     </div>
   );
