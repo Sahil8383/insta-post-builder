@@ -2,7 +2,6 @@ import type { ToolCallEntry } from "@/types/agent-stream";
 import { isRecord, tryParseJson } from "./json";
 import type { ToolBodyPresentation } from "./tool-body-presentation";
 import {
-  AnalyzeRequestBody,
   BuildCanvasBody,
   CritiqueCaptionBody,
   GenerateImageBody,
@@ -34,14 +33,6 @@ export function ToolCallBody({ tool, presentation = "rich" }: Props) {
   const result = tool.resultPreview;
 
   switch (tool.name) {
-    case "analyze_request":
-      return (
-        <AnalyzeRequestBody
-          args={args}
-          result={result}
-          presentation={presentation}
-        />
-      );
     case "web_search":
       return (
         <WebSearchBody

@@ -3,16 +3,17 @@ import type { ToolCallEntry } from "@/types/agent-stream";
 export const dummyToolCallsForTimeline: ToolCallEntry[] = [
   {
     id: "call-00",
-    name: "analyze_request",
+    name: "web_search",
     status: "done",
-    argumentBuffer: '{"user_request":"Coffee shop reel for Gen Z"}',
-    argsPreview: '{"user_request":"Coffee shop reel for Gen Z","media_mode":"auto"}',
-    resultPreview: [
-      "Intent: CREATE",
-      "Web search: no",
-      "Plan: write_caption → pick_hashtags → fetch_stock_media → build_feed_canvas_html → submit_post_package",
-      "Note: Enough context to draft without search; stock visual per auto mode.",
-    ].join("\n"),
+    argumentBuffer: '{"query":"Gen Z coffee shop reels 2026"}',
+    argsPreview: '{"query":"Gen Z coffee shop reels 2026"}',
+    resultPreview: `Research notes:
+
+- Short-form café content and “quiet luxury” aesthetics still trend with younger audiences.
+  https://example.com/gen-z-coffee
+
+- Enough context to draft caption; optional follow-up searches if the user wants local specifics.
+  https://example.com/reels-hooks`,
   },
   // Still buffering args — shows “Preparing tool input…”
   {

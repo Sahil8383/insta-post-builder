@@ -1,5 +1,4 @@
 export const TOOL_META: Record<string, { label: string }> = {
-  analyze_request: { label: "Analyze request" },
   web_search: { label: "Web search" },
   write_caption: { label: "Write caption" },
   critique_caption: { label: "Critique caption" },

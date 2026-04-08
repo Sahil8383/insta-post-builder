@@ -1,6 +1,6 @@
 /**
  * SSE payloads from POST /api/posts/generate/stream — see docs/agentic-streaming-frontend.md
- * Tool names include analyze_request, web_search, write_caption, critique_caption,
+ * Tool names include web_search, write_caption, critique_caption,
  * pick_hashtags, generate_image, fetch_stock_media, build_feed_canvas_html, submit_*.
  * `tool-call-end.result` is stream-shaped (short URLs, sources-only search, raw HTML for canvas, etc.).
  */
