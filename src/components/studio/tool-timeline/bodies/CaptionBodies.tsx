@@ -13,11 +13,23 @@ export function WriteCaptionBody({
   presentation?: ToolBodyPresentation;
 }) {
   if (presentation === "compact") {
+    const slim =
+      args &&
+      ({
+        topic: args.topic,
+        tone: args.tone,
+        target_audience: args.target_audience,
+      } as Record<string, unknown>);
+    const slimKeys = slim ? Object.keys(slim).filter((k) => slim[k] != null) : [];
     return (
       <div className="space-y-2 text-sm leading-relaxed text-zinc-700 dark:text-zinc-300">
-        {args && Object.keys(args).length > 0 ? (
+        {slimKeys.length > 0 ? (
           <p className="whitespace-pre-wrap font-mono text-xs text-zinc-500 dark:text-zinc-400">
-            {JSON.stringify(args, null, 2)}
+            {JSON.stringify(
+              Object.fromEntries(slimKeys.map((k) => [k, slim![k]])),
+              null,
+              2,
+            )}
           </p>
         ) : null}
         {result ? (

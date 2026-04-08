@@ -18,7 +18,10 @@ export function WebSearchBody({
   const query = typeof args?.query === "string" ? args.query : null;
   const notes = result ?? "";
   const blocks = useMemo(() => {
-    const body = notes.replace(/^Research notes:\s*/i, "").trim();
+    const body = notes
+      .replace(/^Research notes:\s*/i, "")
+      .replace(/^Sources:\s*/i, "")
+      .trim();
     const chunks = body.split(/\n(?=- )/).filter(Boolean);
     return chunks.map((chunk) => chunk.replace(/^\s*-\s*/, "").trim());
   }, [notes]);

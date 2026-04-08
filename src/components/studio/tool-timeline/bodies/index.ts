@@ -1,3 +1,4 @@
+export { AnalyzeRequestBody } from "./AnalyzeRequestBody";
 export { WebSearchBody } from "./WebSearchBody";
 export { StockMediaBody } from "./StockMediaBody";
 export { BuildCanvasBody } from "./BuildCanvasBody";

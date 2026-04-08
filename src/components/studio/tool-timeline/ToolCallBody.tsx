@@ -2,6 +2,7 @@ import type { ToolCallEntry } from "@/types/agent-stream";
 import { isRecord, tryParseJson } from "./json";
 import type { ToolBodyPresentation } from "./tool-body-presentation";
 import {
+  AnalyzeRequestBody,
   BuildCanvasBody,
   CritiqueCaptionBody,
   GenerateImageBody,
@@ -28,17 +29,26 @@ type Props = {
   presentation?: ToolBodyPresentation;
 };
 
-export function ToolCallBody({
-  tool,
-  presentation = "rich",
-}: Props) {
+export function ToolCallBody({ tool, presentation = "rich" }: Props) {
   const args = parseArgs(tool);
   const result = tool.resultPreview;
 
   switch (tool.name) {
+    case "analyze_request":
+      return (
+        <AnalyzeRequestBody
+          args={args}
+          result={result}
+          presentation={presentation}
+        />
+      );
     case "web_search":
       return (
-        <WebSearchBody args={args} result={result} presentation={presentation} />
+        <WebSearchBody
+          args={args}
+          result={result}
+          presentation={presentation}
+        />
       );
     case "write_caption":
       return (
@@ -58,10 +68,7 @@ export function ToolCallBody({
       );
     case "critique_caption":
       return (
-        <CritiqueCaptionBody
-          result={result}
-          presentation={presentation}
-        />
+        <CritiqueCaptionBody result={result} presentation={presentation} />
       );
     case "fetch_stock_media":
       return (

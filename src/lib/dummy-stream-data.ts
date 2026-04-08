@@ -1,6 +1,19 @@
 import type { ToolCallEntry } from "@/types/agent-stream";
 
 export const dummyToolCallsForTimeline: ToolCallEntry[] = [
+  {
+    id: "call-00",
+    name: "analyze_request",
+    status: "done",
+    argumentBuffer: '{"user_request":"Coffee shop reel for Gen Z"}',
+    argsPreview: '{"user_request":"Coffee shop reel for Gen Z","media_mode":"auto"}',
+    resultPreview: [
+      "Intent: CREATE",
+      "Web search: no",
+      "Plan: write_caption → pick_hashtags → fetch_stock_media → build_feed_canvas_html → submit_post_package",
+      "Note: Enough context to draft without search; stock visual per auto mode.",
+    ].join("\n"),
+  },
   // Still buffering args — shows “Preparing tool input…”
   {
     id: "call-01",

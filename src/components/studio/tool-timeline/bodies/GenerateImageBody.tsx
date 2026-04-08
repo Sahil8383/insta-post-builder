@@ -1,26 +1,46 @@
-import { tryParseJson } from "../json";
+import { isRecord, tryParseJson } from "../json";
 
 type Props = { resultText: string | undefined };
 
 export function GenerateImageBody({ resultText }: Props) {
-  const parsed = tryParseJson(resultText) as Record<string, unknown> | null;
-  if (!parsed) {
+  const raw = (resultText ?? "").trim();
+  if (!raw) {
+    return <p className="text-xs text-zinc-500">Waiting for image…</p>;
+  }
+
+  const parsed = tryParseJson(raw);
+  const record = isRecord(parsed) ? parsed : null;
+
+  if (!record && /^https?:\/\//i.test(raw)) {
+    return (
+      <div className="overflow-hidden rounded-lg border border-zinc-200 dark:border-zinc-700">
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img
+          src={raw}
+          alt="Generated"
+          className="max-h-48 w-full object-cover"
+        />
+      </div>
+    );
+  }
+
+  if (!record) {
     return (
       <pre className="max-h-32 overflow-auto whitespace-pre-wrap text-xs">
         {resultText}
       </pre>
     );
   }
-  if ("error" in parsed && parsed.error) {
+  if ("error" in record && record.error) {
     return (
       <div className="rounded-lg border border-amber-200 bg-amber-50 px-2.5 py-2 text-xs text-amber-900 dark:border-amber-900/60 dark:bg-amber-950/40 dark:text-amber-100">
-        {String(parsed.error)}
+        {String(record.error)}
       </div>
     );
   }
-  const url = typeof parsed.image_url === "string" ? parsed.image_url : "";
+  const url = typeof record.image_url === "string" ? record.image_url : "";
   const prompt =
-    typeof parsed.revised_prompt === "string" ? parsed.revised_prompt : "";
+    typeof record.revised_prompt === "string" ? record.revised_prompt : "";
   return (
     <div className="space-y-2">
       {url ? (

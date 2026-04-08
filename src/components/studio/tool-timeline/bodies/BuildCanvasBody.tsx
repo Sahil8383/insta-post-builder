@@ -1,6 +1,6 @@
 import type { ToolBodyPresentation } from "../tool-body-presentation";
 import { FieldBlock } from "../Shared";
-import { tryParseJson } from "../json";
+import { isRecord, tryParseJson } from "../json";
 
 type Props = {
   args: Record<string, unknown> | null;
@@ -8,24 +8,45 @@ type Props = {
   presentation?: ToolBodyPresentation;
 };
 
+function looksLikeHtmlDocument(s: string): boolean {
+  const t = s.trim().slice(0, 64).toLowerCase();
+  return t.startsWith("<!doctype html") || t.startsWith("<html");
+}
+
 export function BuildCanvasBody({
   args,
   resultText,
   presentation = "rich",
 }: Props) {
-  const parsed = tryParseJson(resultText) as Record<string, unknown> | null;
-  const err = parsed && "error" in parsed ? String(parsed.error) : null;
-  const html = parsed && typeof parsed.html === "string" ? parsed.html : null;
+  const raw = resultText ?? "";
+  const parsedUnknown = tryParseJson(raw);
+  const parsed = isRecord(parsedUnknown) ? parsedUnknown : null;
+
+  const jsonErr =
+    parsed && "error" in parsed && parsed.error && !parsed.html
+      ? String(parsed.error)
+      : null;
+
+  let html: string | null = null;
+  if (parsed && typeof parsed.html === "string" && parsed.html.trim()) {
+    html = parsed.html;
+  } else if (!parsed && looksLikeHtmlDocument(raw)) {
+    html = raw.trim();
+  }
+
+  const err = jsonErr;
   const w = parsed?.width_px;
   const h = parsed?.height_px;
   const preset =
-    typeof parsed?.format_preset === "string" ? parsed.format_preset : "";
+    parsed && typeof parsed.format_preset === "string"
+      ? parsed.format_preset
+      : "";
 
   const overlay =
     typeof args?.overlay_text === "string" ? args.overlay_text : "";
   const imageUrl = typeof args?.image_url === "string" ? args.image_url : "";
 
-  if (err) {
+  if (err && !html) {
     return (
       <div className="rounded-lg border border-red-200 bg-red-50 px-2.5 py-2 text-xs text-red-800 dark:border-red-900/60 dark:bg-red-950/50 dark:text-red-200">
         {err}

@@ -1,6 +1,6 @@
 import type { ToolBodyPresentation } from "../tool-body-presentation";
 import { FieldBlock } from "../Shared";
-import { tryParseJson } from "../json";
+import { isRecord, tryParseJson } from "../json";
 
 type Props = {
   args: Record<string, unknown> | null;
@@ -8,12 +8,44 @@ type Props = {
   presentation?: ToolBodyPresentation;
 };
 
+/** Full JSON from the tool, or plain image (/ video) URLs from stream-shaping. */
+function coerceStockPayload(
+  resultText: string | undefined,
+): Record<string, unknown> | null {
+  const raw = resultText?.trim();
+  if (!raw) return null;
+
+  const parsed = tryParseJson(raw);
+  if (isRecord(parsed)) {
+    if (parsed.error != null) return parsed;
+    if (typeof parsed.image_url === "string" || parsed.ok === true) {
+      return parsed;
+    }
+  }
+
+  const lines = raw.split("\n").map((l) => l.trim()).filter(Boolean);
+  const urls = lines.filter((l) => /^https?:\/\//i.test(l));
+  if (urls.length >= 1) {
+    return {
+      ok: true,
+      image_url: urls[0],
+      video_url: urls[1] ?? "",
+      media_type: urls[1] ? "video" : "photo",
+      photographer: "",
+      pexels_page_url: "",
+      alt_text: "",
+    };
+  }
+
+  return isRecord(parsed) ? parsed : null;
+}
+
 export function StockMediaBody({
   args,
   resultText,
   presentation = "rich",
 }: Props) {
-  const parsed = tryParseJson(resultText) as Record<string, unknown> | null;
+  const parsed = coerceStockPayload(resultText);
   const q =
     typeof args?.query === "string"
       ? args.query
