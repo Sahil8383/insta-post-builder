@@ -11,7 +11,7 @@ export type AgentState = {
   resultKind: "post" | "insights" | null;
   sessionSummary: string | null;
   errorMessage: string | null;
-  /** Loaded after `done` from GET /api/posts/{id}/ — engagement_package.feed_canvas_html */
+  /** Loaded after `done` from GET /api/posts/{id}/ — `html_content` */
   feedCanvasHtml: string | null;
 };
 

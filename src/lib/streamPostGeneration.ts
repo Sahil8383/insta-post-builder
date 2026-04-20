@@ -81,6 +81,7 @@ export type StreamGenerateBody = {
   target_audience?: string;
   media_mode?: "auto" | "stock" | "generate";
   post_id?: number;
+  post_name?: string;
 };
 
 /**
@@ -149,7 +150,7 @@ export async function streamPostGeneration(
   }
 }
 
-/** GET /api/posts/{id}/ — sets feed_canvas_html in Redux when present. */
+/** GET /api/posts/{id}/ — sets canvas HTML from `html_content`. */
 export async function fetchLeanPostAndCanvas(
   dispatch: AppDispatch,
   postId: number,
@@ -160,9 +161,7 @@ export async function fetchLeanPostAndCanvas(
 
   const res = await fetch(`${base}/api/posts/${postId}/`, { signal });
   if (!res.ok) return;
-  const data = (await res.json()) as {
-    engagement_package?: { feed_canvas_html?: string | null };
-  };
-  const html = data.engagement_package?.feed_canvas_html ?? null;
+  const data = (await res.json()) as { html_content?: string | null };
+  const html = data.html_content?.trim() ? data.html_content : null;
   dispatch(setFeedCanvasHtml(html));
 }
