@@ -21,37 +21,45 @@ const nodeTypes: NodeTypes = {
 
 const initialEdges: Edge[] = [];
 
-const defaultNode: FeedPreviewNodeType = {
-  id: "feed-preview",
-  type: "feedPreview",
-  position: { x: 40, y: 40 },
-  data: {
-    html: null,
-  },
-};
+const COLS = 2;
+const CELL_W = 440;
+const CELL_H = 440;
+const ORIGIN = { x: 40, y: 40 };
+
+function layoutForIndex(i: number) {
+  const col = i % COLS;
+  const row = Math.floor(i / COLS);
+  return {
+    x: ORIGIN.x + col * CELL_W,
+    y: ORIGIN.y + row * CELL_H,
+  };
+}
 
 export type AgentCanvasProps = {
-  feedCanvasHtml: string | null;
+  postIds: number[];
 };
 
-export function AgentCanvas({ feedCanvasHtml }: AgentCanvasProps) {
-  const [nodes, setNodes, onNodesChange] = useNodesState<FeedPreviewNodeType>([
-    defaultNode,
-  ]);
+export function AgentCanvas({ postIds }: AgentCanvasProps) {
+  const [nodes, setNodes, onNodesChange] = useNodesState<FeedPreviewNodeType>([]);
   const [edges, , onEdgesChange] = useEdgesState(initialEdges);
 
   useEffect(() => {
-    setNodes((nds) =>
-      nds.map((n) =>
-        n.id === "feed-preview"
-          ? {
-              ...n,
-              data: { ...n.data, html: feedCanvasHtml },
-            }
-          : n,
-      ),
+    const next: FeedPreviewNodeType[] = postIds.map((id, i) => ({
+      id: `post-${id}`,
+      type: "feedPreview",
+      position: layoutForIndex(i),
+      data: { postId: id },
+    }));
+    setNodes(next);
+  }, [postIds, setNodes]);
+
+  if (postIds.length === 0) {
+    return (
+      <div className="flex h-full min-h-[280px] w-full flex-1 items-center justify-center px-4 text-center text-sm text-zinc-500 dark:text-zinc-400">
+        No posts yet. Send a message in chat to generate your first canvas preview.
+      </div>
     );
-  }, [feedCanvasHtml, setNodes]);
+  }
 
   return (
     <div className="h-full w-full">

@@ -1,10 +1,10 @@
 import type { AppDispatch, RootState } from "@/lib/store";
 import { parseSseStream } from "@/lib/sse";
 import type { AgentStreamEvent } from "@/types/agent-stream";
+import { postsApi } from "@/features/posts/postsApi";
 import {
   resetAgent,
   setDone,
-  setFeedCanvasHtml,
   setPhase,
   setStreamError,
   toolCallEnd,
@@ -62,7 +62,7 @@ export type StreamGenerateBody = {
 
 /**
  * POST /api/posts/generate/stream and dispatch Redux updates until `done` or `error`.
- * After `done`, loads lean post and sets `feedCanvasHtml` when the API returns it.
+ * After `done`, invalidates posts cache and prefetches the saved post for canvas nodes.
  */
 export async function streamPostGeneration(
   dispatch: AppDispatch,
@@ -111,7 +111,13 @@ export async function streamPostGeneration(
 
     const { phase, postId } = getState().agent;
     if (phase === "success" && postId != null) {
-      await fetchLeanPostAndCanvas(dispatch, postId, signal);
+      dispatch(
+        postsApi.util.invalidateTags([
+          { type: "Post", id: "LIST" },
+          { type: "Post", id: postId },
+        ]),
+      );
+      dispatch(postsApi.endpoints.getPost.initiate(postId));
     }
   } catch (e) {
     if (signal.aborted) {
@@ -124,20 +130,4 @@ export async function streamPostGeneration(
       ),
     );
   }
-}
-
-/** GET /api/posts/{id}/ — sets canvas HTML from `html_content`. */
-export async function fetchLeanPostAndCanvas(
-  dispatch: AppDispatch,
-  postId: number,
-  signal?: AbortSignal,
-): Promise<void> {
-  const base = getApiBase();
-  if (!base) return;
-
-  const res = await fetch(`${base}/api/posts/${postId}/`, { signal });
-  if (!res.ok) return;
-  const data = (await res.json()) as { html_content?: string | null };
-  const html = data.html_content?.trim() ? data.html_content : null;
-  dispatch(setFeedCanvasHtml(html));
 }

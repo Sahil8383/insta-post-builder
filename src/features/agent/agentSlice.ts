@@ -8,8 +8,6 @@ export type AgentState = {
   resultKind: "post" | "insights" | null;
   sessionSummary: string | null;
   errorMessage: string | null;
-  /** Loaded after `done` from GET /api/posts/{id}/ — `html_content` */
-  feedCanvasHtml: string | null;
 };
 
 const initialState: AgentState = {
@@ -19,7 +17,6 @@ const initialState: AgentState = {
   resultKind: null,
   sessionSummary: null,
   errorMessage: null,
-  feedCanvasHtml: null,
 };
 
 const agentSlice = createSlice({
@@ -83,9 +80,6 @@ const agentSlice = createSlice({
       state.phase = "error";
       state.errorMessage = action.payload;
     },
-    setFeedCanvasHtml(state, action: PayloadAction<string | null>) {
-      state.feedCanvasHtml = action.payload;
-    },
   },
 });
 
@@ -96,7 +90,6 @@ export const {
   toolCallEnd,
   setDone,
   setStreamError,
-  setFeedCanvasHtml,
 } = agentSlice.actions;
 
 export const agentReducer = agentSlice.reducer;
