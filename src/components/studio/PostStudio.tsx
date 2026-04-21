@@ -27,7 +27,6 @@ export function PostStudio() {
   const store = useAppStore();
   const feedCanvasHtml = useAppSelector((s) => s.agent.feedCanvasHtml);
   const phase = useAppSelector((s) => s.agent.phase);
-  const reasoningText = useAppSelector((s) => s.agent.reasoningText);
   const sessionSummary = useAppSelector((s) => s.agent.sessionSummary);
   const errorMessage = useAppSelector((s) => s.agent.errorMessage);
   const postId = useAppSelector((s) => s.agent.postId);
@@ -94,7 +93,7 @@ export function PostStudio() {
             Chat
           </h2>
           <p className="mt-0.5 text-xs text-zinc-500 dark:text-zinc-400">
-            Agent stream and reasoning
+            Status and tool progress
           </p>
         </header>
 
@@ -110,15 +109,13 @@ export function PostStudio() {
 
             {phase === "streaming" && toolList.length === 0 && (
               <div className="flex justify-start">
-                <div className="max-w-[92%] rounded-2xl rounded-bl-md border border-zinc-200 bg-zinc-100 px-3 py-2 text-sm text-zinc-600 dark:border-zinc-700 dark:bg-zinc-800/80 dark:text-zinc-300">
-                  <span className="inline-flex items-center gap-2">
-                    <span
-                      className="inline-block size-2 animate-pulse rounded-full bg-violet-500"
-                      aria-hidden
-                    />
-                    Generating…
-                  </span>
-                </div>
+                <p className="text-xs text-zinc-500 dark:text-zinc-400">
+                  <span
+                    className="mr-2 inline-block size-1.5 animate-pulse rounded-full bg-violet-500 align-middle"
+                    aria-hidden
+                  />
+                  Working…
+                </p>
               </div>
             )}
 
@@ -160,18 +157,6 @@ export function PostStudio() {
               </div>
             )}
 
-            {(reasoningText || phase === "streaming") && (
-              <div className="flex justify-start">
-                <div className="max-w-[95%] rounded-2xl rounded-bl-md border border-zinc-200 bg-white px-3 py-2 dark:border-zinc-700 dark:bg-zinc-900">
-                  <div className="mb-1 text-xs font-medium uppercase tracking-wide text-zinc-500 dark:text-zinc-400">
-                    Reasoning
-                  </div>
-                  <pre className="max-h-48 overflow-auto whitespace-pre-wrap font-mono text-xs leading-relaxed text-zinc-700 dark:text-zinc-300">
-                    {reasoningText || (phase === "streaming" ? "…" : "—")}
-                  </pre>
-                </div>
-              </div>
-            )}
           </div>
         </div>
 

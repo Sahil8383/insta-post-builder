@@ -3,9 +3,6 @@ import type { StreamPhase, ToolCallEntry } from "@/types/agent-stream";
 
 export type AgentState = {
   phase: StreamPhase;
-  messageId: string | null;
-  iteration: number | null;
-  reasoningText: string;
   toolCallsById: Record<string, ToolCallEntry>;
   postId: number | null;
   resultKind: "post" | "insights" | null;
@@ -17,9 +14,6 @@ export type AgentState = {
 
 const initialState: AgentState = {
   phase: "idle",
-  messageId: null,
-  iteration: null,
-  reasoningText: "",
   toolCallsById: {},
   postId: null,
   resultKind: null,
@@ -38,15 +32,6 @@ const agentSlice = createSlice({
     setPhase(state, action: PayloadAction<StreamPhase>) {
       state.phase = action.payload;
     },
-    setMessageId(state, action: PayloadAction<string>) {
-      state.messageId = action.payload;
-    },
-    setIteration(state, action: PayloadAction<number>) {
-      state.iteration = action.payload;
-    },
-    appendReasoningDelta(state, action: PayloadAction<string>) {
-      state.reasoningText += action.payload;
-    },
     toolCallStart(
       state,
       action: PayloadAction<{ toolCallId: string; toolName: string }>,
@@ -56,40 +41,28 @@ const agentSlice = createSlice({
         id: toolCallId,
         name: toolName,
         status: "running",
-        argumentBuffer: "",
       };
-    },
-    toolCallDelta(
-      state,
-      action: PayloadAction<{ toolCallId: string; fragment: string }>,
-    ) {
-      const row = state.toolCallsById[action.payload.toolCallId];
-      if (row) row.argumentBuffer += action.payload.fragment;
     },
     toolCallEnd(
       state,
       action: PayloadAction<{
         toolCallId: string;
         toolName: string;
-        arguments?: string;
         result?: string;
       }>,
     ) {
-      const { toolCallId, toolName, arguments: argsJson, result } =
-        action.payload;
+      const { toolCallId, toolName, result } = action.payload;
       let row = state.toolCallsById[toolCallId];
       if (!row) {
         row = {
           id: toolCallId,
           name: toolName,
           status: "done",
-          argumentBuffer: "",
         };
         state.toolCallsById[toolCallId] = row;
       }
       row.status = "done";
       row.name = toolName;
-      if (argsJson !== undefined) row.argsPreview = argsJson;
       if (result !== undefined) row.resultPreview = result;
     },
     setDone(
@@ -119,11 +92,7 @@ const agentSlice = createSlice({
 export const {
   resetAgent,
   setPhase,
-  setMessageId,
-  setIteration,
-  appendReasoningDelta,
   toolCallStart,
-  toolCallDelta,
   toolCallEnd,
   setDone,
   setStreamError,

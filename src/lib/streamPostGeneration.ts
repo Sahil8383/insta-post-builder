@@ -2,15 +2,11 @@ import type { AppDispatch, RootState } from "@/lib/store";
 import { parseSseStream } from "@/lib/sse";
 import type { AgentStreamEvent } from "@/types/agent-stream";
 import {
-  appendReasoningDelta,
   resetAgent,
   setDone,
   setFeedCanvasHtml,
-  setIteration,
-  setMessageId,
   setPhase,
   setStreamError,
-  toolCallDelta,
   toolCallEnd,
   toolCallStart,
 } from "@/features/agent/agentSlice";
@@ -23,28 +19,9 @@ function getApiBase(): string {
 
 function dispatchEvent(dispatch: AppDispatch, ev: AgentStreamEvent) {
   switch (ev.type) {
-    case "assistant-message-id":
-      dispatch(setMessageId(ev.messageId));
-      break;
-    case "iteration":
-      dispatch(setIteration(ev.index));
-      break;
-    case "heartbeat":
-      break;
-    case "reasoning-delta":
-      dispatch(appendReasoningDelta(ev.delta));
-      break;
     case "tool-call-start":
       dispatch(
         toolCallStart({ toolCallId: ev.toolCallId, toolName: ev.toolName }),
-      );
-      break;
-    case "tool-call-delta":
-      dispatch(
-        toolCallDelta({
-          toolCallId: ev.toolCallId,
-          fragment: ev.arguments,
-        }),
       );
       break;
     case "tool-call-end":
@@ -52,7 +29,6 @@ function dispatchEvent(dispatch: AppDispatch, ev: AgentStreamEvent) {
         toolCallEnd({
           toolCallId: ev.toolCallId,
           toolName: ev.toolName,
-          arguments: ev.arguments,
           result: ev.result,
         }),
       );
