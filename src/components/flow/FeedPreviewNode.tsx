@@ -74,7 +74,7 @@ function ActionStat({ icon, count, label }: StatProps) {
   return (
     <div className="flex items-center gap-1.5">
       {icon}
-      <span className="text-[13px] font-medium tabular-nums tracking-tight text-[color:var(--ig-text)]">
+      <span className="text-[13px] font-medium tabular-nums tracking-tight text-(--ig-text)">
         {count}
       </span>
       <span className="sr-only">{label}</span>
@@ -139,7 +139,7 @@ function FeedPreviewNodeImpl(props: NodeProps<FeedPreviewNodeType>) {
           >
             {initial}
           </div>
-          <div className="min-w-0 text-[13px] leading-tight text-[color:var(--ig-text)]">
+          <div className="min-w-0 text-[13px] leading-tight text-(--ig-text)">
             <div className="flex min-w-0 flex-wrap items-center gap-1">
               <span className="truncate font-semibold">{handle}</span>
               <VerifiedBadge />
@@ -154,7 +154,7 @@ function FeedPreviewNodeImpl(props: NodeProps<FeedPreviewNodeType>) {
         </div>
         <button
           type="button"
-          className="nodrag -mr-1 rounded p-1 text-[color:var(--ig-text)] opacity-90 hover:opacity-100"
+          className="nodrag -mr-1 rounded p-1 text-(--ig-text) opacity-90 hover:opacity-100"
           aria-label="Post options"
         >
           <MoreHorizontal className="h-5 w-5" strokeWidth={1.5} />
@@ -171,7 +171,7 @@ function FeedPreviewNodeImpl(props: NodeProps<FeedPreviewNodeType>) {
             designWidth={1080}
             designHeight={1080}
             maxDisplaySize={372}
-            className="!rounded-md !bg-[#0a0a0a] ring-0"
+            className="rounded-md! bg-[#0a0a0a]! ring-0"
             loadingTextClassName="text-zinc-500"
             emptyTextClassName="text-zinc-500"
           />
@@ -179,7 +179,7 @@ function FeedPreviewNodeImpl(props: NodeProps<FeedPreviewNodeType>) {
       </div>
 
       <div className="px-2 pt-1.5">
-        <div className="flex items-center justify-between gap-1 pb-1.5 text-[color:var(--ig-text)]">
+        <div className="flex items-center justify-between gap-1 pb-1.5 text-(--ig-text)">
           <div className="flex flex-1 items-center gap-3.5">
             <ActionStat
               label="Likes"
@@ -251,12 +251,12 @@ function FeedPreviewNodeImpl(props: NodeProps<FeedPreviewNodeType>) {
           </span>
         </p>
 
-        <p className="text-[14px] leading-[1.35] text-[color:var(--ig-text)]">
+        <p className="text-[14px] leading-[1.35] text-(--ig-text)">
           <span className="inline-flex items-center gap-1 font-semibold">
             {handle}
             <VerifiedBadge />
           </span>{" "}
-          <span className="whitespace-pre-wrap break-words font-normal [word-break:break-word]">
+          <span className="wrap-break-word whitespace-pre-wrap font-normal">
             {caption}
           </span>
         </p>
