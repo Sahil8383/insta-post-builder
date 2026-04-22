@@ -118,7 +118,7 @@ function FeedPreviewNodeImpl(props: NodeProps<FeedPreviewNodeType>) {
 
   return (
     <div
-      className="nodrag w-[min(100%,400px)] min-w-[200px] overflow-hidden rounded-lg border border-zinc-800/90 shadow-2xl ring-1 ring-zinc-800/50"
+      className="w-[min(100%,400px)] min-w-[200px] overflow-hidden rounded-lg border border-zinc-800/90 shadow-2xl ring-1 ring-zinc-800/50"
       style={
         {
           backgroundColor: IG.bg,

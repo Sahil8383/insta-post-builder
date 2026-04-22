@@ -47,19 +47,6 @@ function OptimizedFeedIframeInner({
     return maxDisplaySize / max;
   }, [designWidth, designHeight, maxDisplaySize]);
 
-  const blobUrl = useMemo(() => {
-    if (!html) return null;
-    return URL.createObjectURL(
-      new Blob([html], { type: "text/html;charset=utf-8" }),
-    );
-  }, [html]);
-
-  useEffect(() => {
-    return () => {
-      if (blobUrl) URL.revokeObjectURL(blobUrl);
-    };
-  }, [blobUrl]);
-
   return (
     <div
       ref={containerRef}
@@ -91,15 +78,16 @@ function OptimizedFeedIframeInner({
             transform: `scale(${scale})`,
           }}
         >
-          {visible && blobUrl ? (
+          {visible && html ? (
             <iframe
               title="Feed canvas"
-              src={blobUrl}
-              className="nodrag nopan block border-0"
+              srcDoc={html}
+              className="nopan block border-0"
               style={{
                 width: designWidth,
                 height: designHeight,
-                pointerEvents: "auto",
+                /* Let the React Flow node receive drag; iframe would otherwise capture pointers. */
+                pointerEvents: "none",
               }}
               sandbox=""
               loading="lazy"

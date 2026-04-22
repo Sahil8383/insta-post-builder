@@ -76,17 +76,16 @@ function AgentFlowInner({ postIds }: AgentFlowInnerProps) {
   const [edges, , onEdgesChange] = useEdgesState(initialEdges);
   const { fitView } = useReactFlow();
 
-  useEffect(() => {
-    setNodes(layoutNodes(postIds));
-  }, [postIds, setNodes]);
+  const postIdsKey = postIds.join("\0");
 
   useEffect(() => {
-    if (nodes.length === 0) return;
-    const t = setTimeout(() => {
+    setNodes(layoutNodes(postIds));
+    const t = window.setTimeout(() => {
       void fitView(fitViewOptions);
     }, 100);
-    return () => clearTimeout(t);
-  }, [nodes, postIds, fitView]);
+    return () => window.clearTimeout(t);
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- postIds matches postIdsKey for this render
+  }, [postIdsKey, setNodes, fitView]);
 
   const onInit: OnInit<FeedPreviewNodeType, Edge> = useCallback((instance) => {
     if (instance.getNodes().length > 0) {
@@ -124,7 +123,7 @@ function AgentFlowInner({ postIds }: AgentFlowInnerProps) {
       proOptions={proOptions}
       attributionPosition="bottom-left"
       nodesConnectable={false}
-      selectNodesOnDrag
+      selectNodesOnDrag={false}
       elementsSelectable
       selectionMode={SelectionMode.Partial}
       panOnDrag
