@@ -8,6 +8,7 @@ import {
   isPostsApiConfigured,
   useListPostsQuery,
 } from "@/features/posts/postsApi";
+import { StudioThemeToggle } from "@/components/studio/StudioThemeToggle";
 import { ToolCallTimeline } from "@/components/studio/tool-timeline";
 
 const AgentCanvas = dynamic(
@@ -105,22 +106,24 @@ export function PostStudio() {
 
       {/* Right: chat */}
       <section className="flex min-h-0 w-full flex-col border-zinc-200 bg-white dark:border-zinc-800 dark:bg-zinc-950 md:w-[min(100%,420px)] md:max-w-[440px] md:shrink-0 md:border-l">
-        <header className="shrink-0 border-b border-zinc-200 px-4 py-3 dark:border-zinc-800">
-          <h2 className="text-sm font-semibold tracking-tight text-zinc-900 dark:text-zinc-100">
-            Chat
-          </h2>
-          <p className="mt-0.5 text-xs text-zinc-500 dark:text-zinc-400">
-            History from saved runs
-          </p>
+        <header className="flex shrink-0 items-start justify-between gap-3 border-b border-zinc-200 px-4 py-3 dark:border-zinc-800">
+          <div className="min-w-0">
+            <h2 className="text-sm font-semibold tracking-tight text-zinc-900 dark:text-zinc-100">
+              Chat
+            </h2>
+            <p className="mt-0.5 text-xs text-zinc-500 dark:text-zinc-400">
+              History from saved runs
+            </p>
+          </div>
+          <StudioThemeToggle />
         </header>
 
         <div className="min-h-[240px] flex-1 overflow-y-auto px-3 py-3 md:min-h-0">
           <div className="flex flex-col gap-3">
             {!isPostsApiConfigured() && (
               <div className="rounded-lg border border-amber-200 bg-amber-50 px-3 py-2 text-xs text-amber-900 dark:border-amber-900/60 dark:bg-amber-950/50 dark:text-amber-100">
-                Set{" "}
-                <span className="font-mono">NEXT_PUBLIC_API_BASE_URL</span> to
-                load history and canvas.
+                Set <span className="font-mono">NEXT_PUBLIC_API_BASE_URL</span>{" "}
+                to load history and canvas.
               </div>
             )}
 
@@ -182,11 +185,13 @@ export function PostStudio() {
               </>
             )}
 
-            {phase === "streaming" && !lastSubmittedQuery && toolList.length > 0 && (
-              <div className="flex w-full justify-start">
-                <ToolCallTimeline tools={toolList} />
-              </div>
-            )}
+            {phase === "streaming" &&
+              !lastSubmittedQuery &&
+              toolList.length > 0 && (
+                <div className="flex w-full justify-start">
+                  <ToolCallTimeline tools={toolList} />
+                </div>
+              )}
 
             {showEphemeralSummary && (
               <div className="flex justify-start">

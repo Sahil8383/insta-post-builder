@@ -10,6 +10,10 @@ export type OptimizedFeedIframeProps = {
   designHeight?: number;
   maxDisplaySize?: number;
   className?: string;
+  /** Class for the "Preview loads when visible" placeholder. */
+  loadingTextClassName?: string;
+  /** Class for the empty "No canvas HTML" placeholder. */
+  emptyTextClassName?: string;
 };
 
 function OptimizedFeedIframeInner({
@@ -18,6 +22,8 @@ function OptimizedFeedIframeInner({
   designHeight = DEFAULT_DESIGN.h,
   maxDisplaySize = 400,
   className = "",
+  loadingTextClassName = "text-zinc-400",
+  emptyTextClassName = "text-zinc-500",
 }: OptimizedFeedIframeProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const [visible, setVisible] = useState(false);
@@ -65,11 +71,15 @@ function OptimizedFeedIframeInner({
       aria-labelledby={titleId}
     >
       {!html ? (
-        <div className="flex h-full w-full items-center justify-center p-4 text-center text-xs text-zinc-500">
+        <div
+          className={`flex h-full w-full items-center justify-center p-4 text-center text-xs ${emptyTextClassName}`}
+        >
           No canvas HTML yet. Run a generation that includes feed canvas.
         </div>
       ) : !visible ? (
-        <div className="flex h-full w-full items-center justify-center text-xs text-zinc-400">
+        <div
+          className={`flex h-full w-full items-center justify-center text-xs ${loadingTextClassName}`}
+        >
           Preview loads when visible…
         </div>
       ) : (
@@ -108,7 +118,9 @@ function propsEqual(a: OptimizedFeedIframeProps, b: OptimizedFeedIframeProps) {
     a.designWidth === b.designWidth &&
     a.designHeight === b.designHeight &&
     a.maxDisplaySize === b.maxDisplaySize &&
-    a.className === b.className
+    a.className === b.className &&
+    a.loadingTextClassName === b.loadingTextClassName &&
+    a.emptyTextClassName === b.emptyTextClassName
   );
 }
 
