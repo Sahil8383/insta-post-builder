@@ -9,6 +9,7 @@ export type StreamPhase = "idle" | "streaming" | "success" | "error";
 
 /** Events the backend may emit; the client only updates Redux for a subset. */
 export type AgentStreamEvent =
+  | { type: "stream-started"; session_id: string }
   | { type: "assistant-message-id"; messageId: string }
   | { type: "iteration"; index: number }
   | { type: "heartbeat" }
@@ -37,7 +38,7 @@ export type AgentStreamEvent =
       result_kind: "post" | "insights";
       session_summary: string;
     }
-  | { type: "error"; message: string };
+  | { type: "error"; message: string; post_id?: number };
 
 export type ToolCallEntry = {
   id: string;

@@ -1,9 +1,20 @@
 "use client";
 
 import dynamic from "next/dynamic";
-import { useCallback, useRef, useState, type KeyboardEvent } from "react";
+import {
+  useCallback,
+  useEffect,
+  useRef,
+  useState,
+  type KeyboardEvent,
+} from "react";
 import { useAppDispatch, useAppSelector, useAppStore } from "@/lib/hooks";
-import { streamPostGeneration } from "@/lib/streamPostGeneration";
+import {
+  USER_CANCEL_MESSAGE,
+  cancelPostGeneration,
+  streamPostGeneration,
+} from "@/lib/streamPostGeneration";
+import { setStreamError } from "@/features/agent/agentSlice";
 import {
   isPostsApiConfigured,
   useListPostsQuery,
@@ -46,11 +57,27 @@ export function PostStudio() {
     null,
   );
   const abortRef = useRef<AbortController | null>(null);
+  const sessionIdRef = useRef<string | null>(null);
+  const cancelRequestedRef = useRef(false);
+  const cancelFallbackRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  useEffect(() => {
+    if (phase !== "streaming" && cancelFallbackRef.current) {
+      clearTimeout(cancelFallbackRef.current);
+      cancelFallbackRef.current = null;
+    }
+  }, [phase]);
 
   const onGenerate = useCallback(() => {
     const q = query.trim();
     if (!q) return;
     setLastSubmittedQuery(q);
+    cancelRequestedRef.current = false;
+    sessionIdRef.current = null;
+    if (cancelFallbackRef.current) {
+      clearTimeout(cancelFallbackRef.current);
+      cancelFallbackRef.current = null;
+    }
     abortRef.current?.abort();
     const ac = new AbortController();
     abortRef.current = ac;
@@ -59,12 +86,41 @@ export function PostStudio() {
       () => store.getState(),
       { query: q },
       ac.signal,
-    );
+      {
+        onSessionStarted: (id) => {
+          sessionIdRef.current = id;
+        },
+        getCancelRequested: () => cancelRequestedRef.current,
+      },
+    ).finally(() => {
+      sessionIdRef.current = null;
+      cancelRequestedRef.current = false;
+      if (cancelFallbackRef.current) {
+        clearTimeout(cancelFallbackRef.current);
+        cancelFallbackRef.current = null;
+      }
+    });
   }, [dispatch, query, store]);
 
-  const onAbort = useCallback(() => {
-    abortRef.current?.abort();
-  }, []);
+  const onAbort = useCallback(async () => {
+    const id = sessionIdRef.current;
+    if (!id || phase !== "streaming") return;
+
+    cancelRequestedRef.current = true;
+    const result = await cancelPostGeneration(id);
+    if (!result.ok) {
+      dispatch(setStreamError(result.detail));
+      abortRef.current?.abort();
+      return;
+    }
+
+    cancelFallbackRef.current = setTimeout(() => {
+      if (store.getState().agent.phase === "streaming") {
+        dispatch(setStreamError(USER_CANCEL_MESSAGE));
+        abortRef.current?.abort();
+      }
+    }, 5000);
+  }, [dispatch, phase, store]);
 
   const onKeyDown = useCallback(
     (e: KeyboardEvent<HTMLTextAreaElement>) => {
